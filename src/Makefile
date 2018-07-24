@@ -27,7 +27,7 @@ ifdef DEBUG
   ASFLAGS += -g
 else
   CFLAGS += -fvisibility=hidden
-  # Disable unwind info to make prog smaler.
+  # Disable unwind info to make prog smaller.
   CFLAGS += -Os -fno-asynchronous-unwind-tables -fno-unwind-tables
   LDFLAGS += -s
 endif
