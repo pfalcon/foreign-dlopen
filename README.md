@@ -1,8 +1,9 @@
 # ELF loader
 
-A small elf loader. It can load static and dynamic linked ELF EXEC and DYN (pie) binaries. The loader doesn't depend on libc and calls kernel services directly (z_syscall.c).
+A small elf loader. It can load static and dynamically linked ELF EXEC and DYN (pie) binaries. The loader is PIE program that doesn't depend on libc and calls kernel services directly (z_syscall.c).
 
-If the loader needs to load dynamic linked ELF it places interpreter binary (usually ld.so) and requested binary into memory then calls the interpreter entry point.
+If the loader needs to load a dynamically linked ELF it places an interpreter (usually ld.so) and a requested binary into a memory and then calls the interpreter entry point.
+
 
 ## Build
 
