@@ -2,6 +2,7 @@
 #include "z_syscalls.h"
 #include "z_utils.h"
 #include "z_elf.h"
+#include "elf_loader.h"
 
 #define PAGE_SIZE	4096
 #define ALIGN		(PAGE_SIZE - 1)
@@ -118,20 +119,32 @@ void z_entry(unsigned long *sp, void (*fini)(void))
 
 int main(int argc, char *argv[])
 {
+	init_exec_elf(argv);
+
+	if (argc < 2)
+		z_errx(1, "no input file");
+
+	exec_elf(argv[1], argc - 1, argv + 1);
+}
+
+void init_exec_elf(char *argv[])
+{
+	/* We assume that argv comes from the original executable params. */
+	if (entry_sp == NULL) {
+		entry_sp = (unsigned long *)argv - 1;
+	}
+}
+
+void exec_elf(const char *file, int argc, char *argv[])
+{
 	Elf_Ehdr ehdrs[2], *ehdr = ehdrs;
 	Elf_Phdr *phdr, *iter;
 	Elf_auxv_t *av;
 	char **env, **p, *elf_interp = NULL;
 	unsigned long *sp = entry_sp;
 	unsigned long base[2], entry[2];
-	const char *file;
 	ssize_t sz;
 	int fd, i;
-
-	/* We assume that argv comes from the original executable params. */
-	if (sp == NULL) {
-		sp = (unsigned long *)argv - 1;
-	}
 
 	{
 		unsigned long *p = sp;
@@ -139,6 +152,8 @@ int main(int argc, char *argv[])
 		p++;
 		/* argv */
 		while (*p++ != 0);
+
+		unsigned long *from = p;
 		/* env */
 		while (*p++ != 0);
 		/* aux vector */
@@ -147,9 +162,12 @@ int main(int argc, char *argv[])
 		}
 		p++;
 
-		unsigned sz = (char *)p - (char *)sp;
-		p = alloca(sz);
-		z_memcpy(p, sp, sz);
+		unsigned long argv_sz = argc * sizeof(*p);
+		unsigned sz = (char *)p - (char *)from;
+		p = alloca(sizeof(*p) + argv_sz + sz);
+		*p = argc;
+		z_memcpy(p + 1, argv, argv_sz);
+		z_memcpy((char *)(p + 1) + argv_sz, from, sz);
 		sp = p;
 		argv = (char **)sp + 1;
 	}
@@ -160,9 +178,6 @@ int main(int argc, char *argv[])
 	av = (void *)p;
 
 	(void)env;
-	if (argc < 2)
-		z_errx(1, "no input file");
-	file = argv[1];
 
 	for (i = 0;; i++, ehdr++) {
 		/* Open file, read and than check ELF header.*/
@@ -225,15 +240,8 @@ int main(int argc, char *argv[])
 #undef AVSET
 	++av;
 
-	/* Shift argv, env and av. */
-	z_memcpy(&argv[0], &argv[1],
-		 (unsigned long)av - (unsigned long)&argv[1]);
-	/* SP points to argc. */
-	(*sp)--;
-
 	z_trampo((void (*)(void))(elf_interp ?
 			entry[Z_INTERP] : entry[Z_PROG]), sp, z_fini);
 	/* Should not reach. */
 	z_exit(0);
 }
-
