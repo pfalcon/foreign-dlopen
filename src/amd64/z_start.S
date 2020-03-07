@@ -1,3 +1,4 @@
+#if !STDLIB
 	.text
 	.align	4
 	.globl	z_start
@@ -8,4 +9,5 @@ z_start:
 	mov	%rdx,	%rsi
 	call	z_entry
 	hlt
+#endif
 
