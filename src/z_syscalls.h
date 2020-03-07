@@ -8,6 +8,20 @@
 #include <fcntl.h>
 #include <unistd.h>
 
+#if STDLIB
+
+#define z_exit _exit
+#define z_open open
+#define z_close close
+#define z_lseek lseek
+#define z_read read
+#define z_write write
+#define z_mmap mmap
+#define z_munmap munmap
+#define z_mprotect mprotect
+
+#else
+
 #define z_errno	(*z_perrno())
 
 int	z_exit(int status);
@@ -21,5 +35,7 @@ void	*z_mmap(void *addr, size_t length, int prot,
 int	z_munmap(void *addr, size_t length);
 int	z_mprotect(void *addr, size_t length, int prot);
 int	*z_perrno(void);
+
+#endif /* STDLIB */
 
 #endif /* Z_SYSCALLS_H */

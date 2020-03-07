@@ -3,6 +3,8 @@
 #include "z_asm.h"
 #include "z_syscalls.h"
 
+#if !STDLIB
+
 static int errno;
 
 int *z_perrno(void)
@@ -58,3 +60,4 @@ z_mmap(void *addr, size_t length, int prot, int flags, int fd, off_t offset)
 #endif
 }
 
+#endif /* !STDLIB */

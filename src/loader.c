@@ -12,6 +12,9 @@
 			 (((x) & PF_X) ? PROT_EXEC : 0))
 #define LOAD_ERR	((unsigned long)-1)
 
+/* Original sp (i.e. pointer to executable params) passed to entry, if any. */
+unsigned long *entry_sp;
+
 /* External fini function that the caller can provide us. */
 static void (*x_fini)(void);
 
@@ -97,20 +100,39 @@ err:
 #define Z_PROG		0
 #define Z_INTERP	1
 
+#if !STDLIB
+int main(int argc, char *argv[]);
+
 void z_entry(unsigned long *sp, void (*fini)(void))
+{
+	int argc;
+	char **argv;
+
+	entry_sp = sp;
+	x_fini = fini;
+	argc = (int)*(sp);
+	argv = (char **)(sp + 1);
+	main(argc, argv);
+}
+#endif
+
+int main(int argc, char *argv[])
 {
 	Elf_Ehdr ehdrs[2], *ehdr = ehdrs;
 	Elf_Phdr *phdr, *iter;
 	Elf_auxv_t *av;
-	char **argv, **env, **p, *elf_interp = NULL;
+	char **env, **p, *elf_interp = NULL;
+	unsigned long *sp = entry_sp;
 	unsigned long base[2], entry[2];
 	const char *file;
 	ssize_t sz;
-	int argc, fd, i;
+	int fd, i;
 
-	x_fini = fini;
-	argc = (int)*(sp);
-	argv = (char **)(sp + 1);
+	/* We assume that argv comes from the original executable params. */
+	if (sp == NULL) {
+		sp = (unsigned long *)argv - 1;
+	}
+
 	env = p = (char **)&argv[argc + 1];
 	while (*p++ != NULL)
 		;

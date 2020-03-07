@@ -1,6 +1,7 @@
 # make ARCH=i386 SMALL=1 DEBUG=1
 
 ARCH ?= amd64
+STDLIB = 1
 SMALL = 0
 DEBUG = 0
 
@@ -9,8 +10,12 @@ ARCHS64 := amd64
 ARCHS := $(ARCHS32) $(ARCHS64)
 
 CFLAGS += -pipe -Wall -Wextra -fPIC -fno-ident -fno-stack-protector -U _FORTIFY_SOURCE
-LDFLAGS += -nostartfiles -nodefaultlibs -nostdlib 
-LDFLAGS += -pie -e z_start -Wl,-Bsymbolic,--no-undefined,--build-id=none
+CFLAGS += -DSTDLIB=$(STDLIB)
+ifeq "$(STDLIB)" "0"
+#LDFLAGS += -nostartfiles -nodefaultlibs -nostdlib
+LDFLAGS += -nostartfiles -e z_start
+endif
+LDFLAGS += -pie -Wl,-Bsymbolic,--no-undefined,--build-id=none
 TARGET := loader
 
 ifeq "$(filter $(ARCH),$(ARCHS))" ""
