@@ -24,20 +24,20 @@ endif
 
 ifeq "$(filter $(ARCH),$(ARCHS32))" "$(ARCH)"
   CFLAGS += -m32 -DELFCLASS=ELFCLASS32
-  ASFLAGS += -m32
 else
   CFLAGS += -DELFCLASS=ELFCLASS64
 endif
 
 ifeq "$(DEBUG)" "1"
   CFLAGS += -O0 -g
-  ASFLAGS += -g
 else
   CFLAGS += -fvisibility=hidden
   # Disable unwind info to make prog smaller.
   CFLAGS += -Os -fno-asynchronous-unwind-tables -fno-unwind-tables
   LDFLAGS += -s
 endif
+
+ASFLAGS = $(CFLAGS)
 
 OBJS := $(patsubst %.c,%.o, $(wildcard *.c))
 OBJS += $(patsubst %.S,%.o, $(wildcard $(ARCH)/*.S))
