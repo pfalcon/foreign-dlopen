@@ -117,16 +117,6 @@ void z_entry(unsigned long *sp, void (*fini)(void))
 }
 #endif
 
-int main(int argc, char *argv[])
-{
-	init_exec_elf(argv);
-
-	if (argc < 2)
-		z_errx(1, "no input file");
-
-	exec_elf(argv[1], argc - 1, argv + 1);
-}
-
 void init_exec_elf(char *argv[])
 {
 	/* We assume that argv comes from the original executable params. */

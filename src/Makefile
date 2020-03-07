@@ -52,7 +52,7 @@ endif
 
 all: $(TARGET)
 
-loader: $(OBJS)
+loader: main.o $(OBJS)
 
 clean:
 	rm -rf *.o $(TARGET) */*.o
