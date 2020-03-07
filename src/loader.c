@@ -133,6 +133,27 @@ int main(int argc, char *argv[])
 		sp = (unsigned long *)argv - 1;
 	}
 
+	{
+		unsigned long *p = sp;
+		/* argc */
+		p++;
+		/* argv */
+		while (*p++ != 0);
+		/* env */
+		while (*p++ != 0);
+		/* aux vector */
+		while (*p++ != 0) {
+			p++;
+		}
+		p++;
+
+		unsigned sz = (char *)p - (char *)sp;
+		p = alloca(sz);
+		z_memcpy(p, sp, sz);
+		sp = p;
+		argv = (char **)sp + 1;
+	}
+
 	env = p = (char **)&argv[argc + 1];
 	while (*p++ != NULL)
 		;
