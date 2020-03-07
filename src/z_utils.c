@@ -1,3 +1,5 @@
+#if !STDLIB
+
 #include <stdlib.h>
 
 void *z_memset(void *s, int c, size_t n)
@@ -17,3 +19,4 @@ void *z_memcpy(void *dest, const void *src, size_t n)
 	return dest;
 }
 
+#endif /* !STDLIB */

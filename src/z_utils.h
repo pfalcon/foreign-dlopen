@@ -8,8 +8,13 @@
 
 #define z_alloca	__builtin_alloca
 
+#if STDLIB
+#define z_memset memset
+#define z_memcpy memcpy
+#else
 void	*z_memset(void *s, int c, size_t n);
 void	*z_memcpy(void *dest, const void *src, size_t n);
+#endif
 
 void	z_sprintn(char *buf, unsigned long ul, int base);
 
