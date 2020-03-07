@@ -1,6 +1,8 @@
 # make ARCH=i386 SMALL=1 DEBUG=1
 
 ARCH ?= amd64
+SMALL = 0
+DEBUG = 0
 
 ARCHS32 := i386
 ARCHS64 := amd64
@@ -22,7 +24,7 @@ else
   CFLAGS += -DELFCLASS=ELFCLASS64
 endif
 
-ifdef DEBUG
+ifeq "$(DEBUG)" "1"
   CFLAGS += -O0 -g
   ASFLAGS += -g
 else
@@ -35,7 +37,7 @@ endif
 OBJS := $(patsubst %.c,%.o, $(wildcard *.c))
 OBJS += $(patsubst %.S,%.o, $(wildcard $(ARCH)/*.S))
 
-ifdef SMALL
+ifeq "$(SMALL)" "1"
   OBJS := $(filter-out z_printf.%,$(OBJS))
   OBJS := $(filter-out z_err.%,$(OBJS))
   CFLAGS += -DZ_SMALL
