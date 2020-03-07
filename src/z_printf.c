@@ -128,6 +128,7 @@ reswitch:
 			putcharfd('0', fd);
 			putcharfd('x', fd);
 			lflag += sizeof(void *)==sizeof(unsigned long)? 1 : 0;
+			/* FALLTHRU */
 		case 'x':
 			ul = lflag ? va_arg(ap, unsigned long) : va_arg(ap, unsigned int);
 			kprintn(fd, ul, 16);
