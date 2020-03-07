@@ -158,6 +158,28 @@ reswitch:
 	z_flushbuf();
 }
 
+void
+z_sprintn(char *buf, unsigned long ul, int base)
+{
+	/* hold a long in base 8 */
+	char *p;
+
+	p = buf;
+	do {
+		*p++ = "0123456789abcdef"[ul % base];
+	} while (ul /= base);
+	*p-- = 0;
+
+	/* output is reversed, swap it now */
+	while (p > buf) {
+		char c = *p;
+		*p = *buf;
+		*buf = c;
+		buf++; p--;
+	}
+}
+
+/* TODO: Refactor in terms of z_sprintn(). */
 static void
 kprintn(int fd, unsigned long ul, int base)
 {
