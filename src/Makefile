@@ -16,7 +16,7 @@ ifeq "$(STDLIB)" "0"
 LDFLAGS += -nostartfiles -e z_start
 endif
 LDFLAGS += -pie -Wl,-Bsymbolic,--no-undefined,--build-id=none
-TARGET := loader
+TARGET := loader foreign_dlopen_demo
 
 ifeq "$(filter $(ARCH),$(ARCHS))" ""
   $(error ARCH='$(ARCH)' is not supported)
@@ -39,7 +39,7 @@ endif
 
 ASFLAGS = $(CFLAGS)
 
-OBJS := loader.o z_err.o z_printf.o z_syscalls.o z_utils.o
+OBJS := loader.o z_err.o z_printf.o z_syscalls.o z_utils.o foreign_dlopen.o
 OBJS += $(patsubst %.S,%.o, $(wildcard $(ARCH)/*.S))
 
 ifeq "$(SMALL)" "1"
@@ -53,6 +53,8 @@ endif
 all: $(TARGET)
 
 loader: main.o $(OBJS)
+
+foreign_dlopen_demo: foreign_dlopen_demo.o $(OBJS)
 
 clean:
 	rm -rf *.o $(TARGET) */*.o
