@@ -6,7 +6,7 @@ ARCHS32 := i386
 ARCHS64 := amd64
 ARCHS := $(ARCHS32) $(ARCHS64)
 
-CFLAGS += -pipe -Wall -Wextra -fPIC -fno-ident
+CFLAGS += -pipe -Wall -Wextra -fPIC -fno-ident -fno-stack-protector -U _FORTIFY_SOURCE
 LDFLAGS += -nostartfiles -nodefaultlibs -nostdlib 
 LDFLAGS += -pie -e z_start -Wl,-Bsymbolic,--no-undefined,--build-id=none
 TARGET := loader
