@@ -1,0 +1,4 @@
+# Target helper is built against target system (and its libdl).
+LDLIBS = -ldl
+
+fdlhelper: fdlhelper.o
