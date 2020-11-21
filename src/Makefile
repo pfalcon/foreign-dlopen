@@ -9,6 +9,8 @@ ARCHS32 := i386
 ARCHS64 := amd64
 ARCHS := $(ARCHS32) $(ARCHS64)
 
+CFLAGS_i386 = -m32
+
 CFLAGS += -pipe -Wall -Wextra -fPIC -fno-ident -fno-stack-protector -U _FORTIFY_SOURCE
 CFLAGS += -DSTDLIB=$(STDLIB)
 ifeq "$(STDLIB)" "0"
@@ -23,10 +25,13 @@ ifeq "$(filter $(ARCH),$(ARCHS))" ""
 endif
 
 ifeq "$(filter $(ARCH),$(ARCHS32))" "$(ARCH)"
-  CFLAGS += -m32 -DELFCLASS=ELFCLASS32
+  CFLAGS += -DELFCLASS=ELFCLASS32
 else
   CFLAGS += -DELFCLASS=ELFCLASS64
 endif
+
+CFLAGS += $(CFLAGS_$(ARCH))
+LDFLAGS += $(CFLAGS_$(ARCH))
 
 ifeq "$(DEBUG)" "1"
   CFLAGS += -O0 -g
