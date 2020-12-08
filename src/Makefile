@@ -55,12 +55,17 @@ endif
 
 .PHONY: clean all
 
-all: $(TARGET)
+all: $(TARGET) fdlhelper
 
 loader: main.o $(OBJS)
 
 foreign_dlopen_demo: foreign_dlopen_demo.o $(OBJS)
 
+# fdlhelper lives in its own Makefile because compiler options are
+# completely different.
+fdlhelper:
+	$(MAKE) -f Makefile.fdlhelper
+
 clean:
-	rm -rf *.o $(TARGET) */*.o
+	rm -rf *.o $(TARGET) fdlhelper */*.o
 
