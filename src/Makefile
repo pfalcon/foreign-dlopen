@@ -6,7 +6,7 @@ SMALL = 0
 DEBUG = 0
 
 ARCHS32 := i386 arm
-ARCHS64 := amd64
+ARCHS64 := amd64 aarch64
 ARCHS := $(ARCHS32) $(ARCHS64)
 
 CFLAGS_i386 = -m32
